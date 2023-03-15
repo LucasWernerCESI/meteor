@@ -1,12 +1,19 @@
+import { isPlatform } from "@ionic/react";
 import { Constants } from "../constants/Constants";
 import { IStorageHelper } from "../helpers/IStorageHelper";
 import { LocalStorageHelper } from "../helpers/LocalStorageHelper";
+import { NativeStorageHelper } from "../helpers/NativeStorageHelper";
 
 export class FavoriteLocationsService {
     private _helper: IStorageHelper<WeatherForeacast[]>;
 
     constructor() {
-        this._helper = new LocalStorageHelper();
+        if (isPlatform("desktop") || isPlatform("mobileweb") || isPlatform("electron" || isPlatform("pwa")))  {
+            this._helper = new LocalStorageHelper();
+        }
+        else {
+            this._helper = new NativeStorageHelper();
+        }
         // throw new Error("Method not implemented.");
     }
 

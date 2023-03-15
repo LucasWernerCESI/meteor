@@ -14,5 +14,5 @@ export class NativeStorageHelper<T> implements IStorageHelper<T> {
     async remove(key: string, value: T): Promise<void> {
         throw new Error("Method not implemented."); 
     }
-    
+
 }
