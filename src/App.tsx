@@ -1,4 +1,4 @@
-import { Route } from "react-router-dom";
+import { Redirect, Route } from "react-router-dom";
 import {
   IonApp,
   IonIcon,
@@ -10,7 +10,7 @@ import {
   setupIonicReact,
 } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
-import { egg, flower, sparkles, woman } from "ionicons/icons";
+import { beer, partlySunny} from "ionicons/icons";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -34,6 +34,9 @@ import { GroupeApe } from "./pages/Groupe-APE/Exemple";
 import { GroupeEuh } from "./pages/Groupe-EUH/Exemple";
 import { GroupeFeur } from "./pages/Groupe-FEUR/Exemple";
 import { GroupePfou } from "./pages/Groupe-PFOU/Exemple";
+import { WelcomePage } from "./pages/WelcomePage";
+import { ProfilPage } from "./pages/Profil/ProfilPage";
+import { WeatherPage } from "./pages/Weather/WeatherPage";
 
 setupIonicReact();
 
@@ -42,35 +45,23 @@ const App: React.FC = () => (
     <IonReactRouter>
       <IonTabs>
         <IonRouterOutlet>
-          <Route exact path="/ape">
-            <GroupeApe />
-          </Route>
-          <Route exact path="/euh">
-            <GroupeEuh />
-          </Route>
-          <Route path="/feur">
-            <GroupeFeur />
-          </Route>
-          <Route path="/pfou">
-            <GroupePfou />
-          </Route>
+          <Redirect exact path="/" to="/home" />
+          <Route path="/home" render={() => <WelcomePage />} exact={true} />
+          <Route path="/ape" render={() => <GroupeApe />} exact={true} />
+          <Route path="/euh" render={() => <GroupeEuh />} exact={true} />
+          <Route path="/feur" render={() => <GroupeFeur />} exact={true} />
+          <Route path="/pfou" render={() => <GroupePfou />} exact={true} />
+          <Route path="/profil" render={() => <ProfilPage />} exact={true} />
+          <Route path='/weather'render={() => <WeatherPage />} exact={true} />
         </IonRouterOutlet>
         <IonTabBar slot="bottom">
-          <IonTabButton tab="EUH" href="/euh">
-            <IonIcon aria-hidden="true" icon={woman} />
-            <IonLabel>EUH</IonLabel>
+          <IonTabButton tab="Weather" href="/weather">
+            <IonIcon aria-hidden="true" icon={partlySunny} />
+            <IonLabel>Weather</IonLabel>
           </IonTabButton>
-          <IonTabButton tab="APE" href="/ape">
-            <IonIcon aria-hidden="true" icon={egg} />
-            <IonLabel>APE</IonLabel>
-          </IonTabButton>
-          <IonTabButton tab="FEUR" href="/feur">
-            <IonIcon aria-hidden="true" icon={flower} />
-            <IonLabel>FEUR</IonLabel>
-          </IonTabButton>
-          <IonTabButton tab="PFOU" href="/pfou">
-            <IonIcon aria-hidden="true" icon={sparkles} />
-            <IonLabel>PFOU</IonLabel>
+          <IonTabButton tab="Profil" href="/profil">
+            <IonIcon aria-hidden="true" icon={beer} />
+            <IonLabel>Profil</IonLabel>
           </IonTabButton>
         </IonTabBar>
       </IonTabs>
