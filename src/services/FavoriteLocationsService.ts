@@ -3,25 +3,24 @@ import { IStorageHelper } from "../helpers/IStorageHelper";
 import { LocalStorageHelper } from "../helpers/LocalStorageHelper";
 
 export class FavoriteLocationsService {
-    private _helper: IStorageHelper<string>;
+    private _helper: IStorageHelper<WeatherForeacast[]>;
 
     constructor() {
         this._helper = new LocalStorageHelper();
         // throw new Error("Method not implemented.");
     }
 
-    async addFavoriteLocation(location: string): Promise<void> {
+    async addFavoriteLocation(forecast: WeatherForeacast): Promise<void> {
 
         const favorites = await this.getFavoriteLocations();
         
         this._helper.set(
             Constants.Storage.Keys.FavoriteLocations,
-            JSON.stringify(favorites 
+            favorites 
                 ? [
                     ...favorites,
-                    location
-                ] : [location]
-            )
+                    forecast
+                ] : [forecast]
         )
     }
 
@@ -31,17 +30,13 @@ export class FavoriteLocationsService {
         if (favorites) {
             this._helper.set(
                 Constants.Storage.Keys.FavoriteLocations,
-                JSON.stringify(favorites.filter(el => el !== location))
+                favorites.filter(el => el.city !== location)
             )
         }
 
     }
 
-    async getFavoriteLocations(): Promise<string[] | null> {
-        const storedFavorites = await this._helper.get(Constants.Storage.Keys.FavoriteLocations);
-
-        if (!storedFavorites) return null;
-
-        return await JSON.parse(storedFavorites) as string[];
+    async getFavoriteLocations(): Promise<WeatherForeacast[] | null> {
+        return await this._helper.get(Constants.Storage.Keys.FavoriteLocations) as WeatherForeacast[];
     }
 }
