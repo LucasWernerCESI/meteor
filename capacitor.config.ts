@@ -1,7 +1,7 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
+  appId: 'meteor12345',
   appName: 'meteor',
   webDir: 'build',
   bundledWebRuntime: false
