@@ -30,7 +30,7 @@ import "@ionic/react/css/display.css";
 
 /* Theme variables */
 import "./theme/variables.css";
-import { GroupeApe } from "./pages/Groupe-APE/Exemple";
+import { MeteoDisplay } from "./pages/Groupe-APE/MeteoDisplay";
 import { GroupeEuh } from "./pages/Groupe-EUH/Exemple";
 import { GroupeFeur } from "./pages/Groupe-FEUR/Exemple";
 import { GroupePfou } from "./pages/Groupe-PFOU/Exemple";
@@ -47,7 +47,7 @@ const App: React.FC = () => (
         <IonRouterOutlet>
           <Redirect exact path="/" to="/home" />
           <Route path="/home" render={() => <WelcomePage />} exact={true} />
-          <Route path="/ape" render={() => <GroupeApe />} exact={true} />
+          <Route path="/ape" render={() => <WeatherPage />} exact={true} />
           <Route path="/euh" render={() => <GroupeEuh />} exact={true} />
           <Route path="/feur" render={() => <GroupeFeur />} exact={true} />
           <Route path="/pfou" render={() => <GroupePfou />} exact={true} />
