@@ -7,16 +7,13 @@ import { NativeStorageHelper } from "../helpers/NativeStorageHelper";
 export class FavoriteForecastsService {
     private _helper: IStorageHelper<WeatherForeacast[]>;
 
-    constructor() {
-        this._helper = new NativeStorageHelper();
-        
-        // if (isPlatform("desktop") || isPlatform("mobileweb") || isPlatform("electron") || isPlatform("pwa"))  {
-        //     this._helper = new LocalStorageHelper();
-        // }
-        // else {
-        //     this._helper = new NativeStorageHelper();
-        // }
-        // throw new Error("Method not implemented.");
+    constructor() {        
+        if (isPlatform("desktop") || isPlatform("mobileweb") || isPlatform("electron") || isPlatform("pwa"))  {
+            this._helper = new LocalStorageHelper();
+        }
+        else {
+            this._helper = new NativeStorageHelper();
+        }
     }
 
     async addFavoriteForecast(forecast: WeatherForeacast): Promise<void> {
