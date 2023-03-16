@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { FavoriteForecastsService } from "../../services/FavoriteForecastsService"
 
 export const GroupePfou = () => {
+
     const service = new FavoriteForecastsService();
 
     const [forecast, setForecast] = useState<WeatherForeacast[] | null>(null);

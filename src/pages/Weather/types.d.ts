@@ -7,15 +7,21 @@ declare type GeolocationData = {
         tsoil2: number
     }]
 }
+
+declare type CityData = {
+    name: string,
+    latitude: number,
+    longitude: number,
+    altitude: number,
+    cp: number,
+    insee: string,
+}
+
 declare type CitiesData = {
-    cities: [
-        {
-            name: string,
-            latitude: number,
-            longitude: number,
-            altitude: number,
-            cp: number,
-            insee: string,
-        }
-    ],
+    cities: CityData[],
+}
+
+declare type Coords = {
+    lat: number,
+    long: number
 }

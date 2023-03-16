@@ -1,80 +1,112 @@
-import { IonButton, IonSearchbar, IonText, IonToolbar} from "@ionic/react";
+import { IonButton, IonSearchbar, IonText, IonToolbar } from "@ionic/react";
 import { MeteoDisplay } from "../Groupe-APE/MeteoDisplay";
 import { CitiesSearchListDisplay } from "../Groupe-APE/CitiesSearchListDisplay";
 import { Position } from '@capacitor/geolocation';
 import { useEffect, useState } from 'react';
-import {askCoord} from '../Groupe-FEUR/permition';
+import { askCoord } from '../Groupe-FEUR/permition';
+import { Constants } from "../../constants/Constants";
+import { FetchWrapper } from "../../wrappers/FetchWrapper";
+import { FavoriteForecastsService } from '../../services/FavoriteForecastsService';
 
 export const WeatherPage = () => {
 
-  const [valueCity, setValueCity] = useState<string | null >();
-  const [forecast, setGeoloc] = useState<GeolocationData | null >(null);
-  const [cities, setCities] = useState<CitiesData | null >(null);
-  // const coord = await askCoord();
-  
-  const callApi = (type: string = 'cities', coord: string|null = null) => {
-    let apilink = 'https://api.meteo-concept.com/api/location/cities?token=45eb54d1f30b67a31d6aa41ab941d3e9d917b7f0f98e23bb125c9073deb69774&search=';
-    let payload = valueCity
+  const favoritesService = new FavoriteForecastsService();
 
-    if(type === 'geolocation'){
-      apilink = 'https://api.meteo-concept.com/api/forecast/nextHours?token=45eb54d1f30b67a31d6aa41ab941d3e9d917b7f0f98e23bb125c9073deb69774&latlng=';
-      payload = coord
-    }
+  const [valueCity, setValueCity] = useState<string | null>();
+  const [forecast, setForecast] = useState<GeolocationData | null>(null);
+  const [cities, setCities] = useState<CitiesData | null>(null);
+  const [selectedCity, setSelectedCity] = useState<CityData | null>(null)
+  const [coord, setCoord] = useState<Partial<Position> | null>(null);
 
-    async function fetchData() {
-      const response = await fetch(
-        apilink + payload, {
-          method: 'GET',
-        });
-        
-        console.log('response', response)
-        const data = await response.json();
-        
-        console.log('data', data)
-        console.log(apilink + payload)
-        if(type === 'geolocation'){
-          setGeoloc(data as GeolocationData);
-        } else {
-          setCities(data as CitiesData);
-        }
-    }
-    fetchData();
+  const callForCities = async (): Promise<void> => {
+    if (!valueCity) return;
+
+    const result = await FetchWrapper.Get<CitiesData>(
+      Constants.Api.Meteo.Cities.Endpoint,
+      [{
+        key: "search",
+        value: valueCity
+      }]
+    )
+
+    setCities(result)
   }
 
-  const [clickButton, setClickButton] = useState(true)
-  const [coord, setCoord] = useState<Position>()
+  const callForForecasts = async (): Promise<void> => {
+    if (!coord) return;
+
+    const forecasts = await FetchWrapper.Get<GeolocationData>(
+      Constants.Api.Meteo.NextHours.Endpoint,
+      [{
+        key: "latlng",
+        value: coord?.coords?.latitude + ',' + coord?.coords?.longitude
+      }]
+    );
+
+    setValueCity(forecasts.city.name);
+
+    setForecast(forecasts)
+  }
 
   const handleLocationButton = async () => {
-    setClickButton(true)
-    if(coord){
-      const coordTrait = coord.coords.latitude+","+coord.coords.longitude;
-      callApi('geolocation', coordTrait);
+    const coords = await askCoord();
+
+    if (coords) {
+      setSelectedCity({
+        name: valueCity ?? "",
+        latitude: coords.coords.latitude,
+        longitude: coords.coords.longitude,
+        altitude: -1,
+        cp: -1,
+        insee: ""
+      })
     }
   }
 
-  const changeCoords = async (): Promise<void> => {
-    setCoord(await askCoord());
+  const handleChangeValueCity = (event: Event) => {
+    const target = event.target as HTMLIonSearchbarElement;
+    setValueCity(target.value);
+  }
+
+  const handleCitySubmit = () => {
+    void callForCities();
+  }
+
+  const handleFavoriteAdd = async () => {
+    favoritesService.addFavoriteForecast({
+      createdAt: new Date(),
+      city: valueCity ?? selectedCity?.name,
+      temp: forecast?.forecast[0].tsoil2
+    })
+
+    console.log(await favoritesService.getFavoriteForecasts());
   }
 
   useEffect(() => {
-    if (clickButton) {
-        void changeCoords();
-      }
-  }, [clickButton])
-  
-  const handleChangeValueCity = (event: Event) => {
-    
-    const target = event.target as HTMLIonSearchbarElement;
-    setValueCity(target.value);
-    console.log(target.value)
-  }
+    if (selectedCity) {
+      console.log(selectedCity)
+      setCoord({
+        coords: {
+          latitude: selectedCity?.latitude,
+          longitude: selectedCity?.longitude,
+          accuracy: -1,
+          altitude: null,
+          speed: null,
+          heading: null,
+          altitudeAccuracy: undefined
+        }
+      })
+    }
+  }, [selectedCity])
 
-  const handleSubmitForm = () => {
-    callApi('cities');
-  }
-  const setTemp = () => {
-    callApi('geolocation');
-  }
+  useEffect(() => {
+    console.log(coord);
+    void callForForecasts();
+  }, [coord])
+
+  useEffect(() => {
+    console.log(cities)
+  }, [cities])
 
   return (
     <>
@@ -83,9 +115,10 @@ export const WeatherPage = () => {
         <IonSearchbar onIonChange={(ev) => handleChangeValueCity(ev)} value={valueCity} color='dark' placeholder="Latitude,Longitude"></IonSearchbar>
       </IonToolbar>
       <IonButton onClick={handleLocationButton}>Me localiser</IonButton>
-      <MeteoDisplay forecast={forecast}/>
-      <CitiesSearchListDisplay cities={cities}/>
-      <IonButton onClick={handleSubmitForm} color='primary'>Rechercher la météo</IonButton>
+      <MeteoDisplay forecast={forecast} />
+      <CitiesSearchListDisplay cities={cities} stateSetter={setSelectedCity} />
+      <IonButton onClick={handleCitySubmit} color='primary'>Rechercher la météo</IonButton>
+      <IonButton onClick={() => {handleFavoriteAdd()}} color='secondary'>Ajouter aux favoris</IonButton>
     </>
   );
 };

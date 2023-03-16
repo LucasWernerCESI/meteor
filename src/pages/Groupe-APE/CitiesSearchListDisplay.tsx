@@ -1,15 +1,21 @@
 import React, { useEffect, useState } from 'react';
 
 type Props = {
-    cities: CitiesData | null
+    cities: CitiesData | null,
+    stateSetter: (city: CityData | null) => void
 }
 
-export const CitiesSearchListDisplay = ({cities}: Props) => {
+export const CitiesSearchListDisplay = ({cities, stateSetter}: Props) => {
+
+    const [city, setCity] = useState<CityData | null>(null);
+
+    useEffect(() => {
+        stateSetter(city);
+    }, [city])
 
     return (
         <div className='cities-display'>
             <ul>
-                <form method='GET' name='form'>
                 {!cities &&
                     <div>Search the city where you want to show the weather.</div>
                 }
@@ -19,12 +25,10 @@ export const CitiesSearchListDisplay = ({cities}: Props) => {
                             <p>Name  : {item.name}</p>
                             <p>CP    :  {item.cp}</p>
                             <p>Insee : {item.insee}°</p>
-                            <input type='hidden' name='latlng' value={item.latitude+item.longitude}/>
-                            <button>Voir la méteo de ma ville</button>
+                            <button onClick={() => {setCity(item)}}>Voir la méteo de ma ville</button>
                         </div>
                     </li>
                 ))}
-                </form>
             </ul>
         </div>
     );
