@@ -1,22 +1,33 @@
-import { FavoriteLocationsService } from "../../services/FavoriteLocationsService"
+import { useEffect, useState } from "react";
+import { FavoriteForecastsService } from "../../services/FavoriteForecastsService"
 
 export const GroupePfou = () => {
-    const service = new FavoriteLocationsService();
+    const service = new FavoriteForecastsService();
 
-    service.addFavoriteLocation("New York").then(
-        () => {service.getFavoriteLocations()
-            .then(response => {console.log(response)})}
-    )
+    const [forecast, setForecast] = useState<WeatherForeacast[] | null>(null);
 
-    console.log(service.getFavoriteLocations());
+    const getForecasts = async (): Promise<void> => {
+        service.addFavoriteForecast({
+            city: "Paris",
+            temp: 25,
+            createdAt: new Date()
+        }).then(async () => {
+            setForecast(await service.getFavoriteForecasts());
+        });
+    }
 
-    // service.removeFavoriteLocation("New York");
+    useEffect(() => {
+        void getForecasts();
+    }, [])
 
-    // console.log(service.getFavoriteLocations());
+    useEffect(() => {
+        console.log(forecast);
+    }, [forecast])
 
     return (
         <>
         <h1>Groupe Pfou</h1>
+        {forecast?.map(el => el.city + ' ; ')}
         </>
     )
 }
