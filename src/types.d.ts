@@ -1,5 +1,5 @@
 declare type WeatherForeacast = {
     city: string,
-    forecast: number[],
+    temp: number,
     createdAt: Date
 }
