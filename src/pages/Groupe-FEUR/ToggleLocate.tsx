@@ -10,7 +10,7 @@ export const ToggleGeolocation = () => {
     const [coord, setCoord] = useState<Position>()
 
     const handleChangeButton = async () => {
-        setClickButton(!clickButton)
+        setClickButton(true)
     }
 
     const changeCoords = async (): Promise<void> => {

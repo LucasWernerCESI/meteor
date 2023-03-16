@@ -30,7 +30,7 @@ import "@ionic/react/css/display.css";
 
 /* Theme variables */
 import "./theme/variables.css";
-import { GroupeApe } from "./pages/Groupe-APE/Exemple";
+import { MeteoDisplay } from "./pages/Groupe-APE/MeteoDisplay";
 import { GroupeEuh } from "./pages/Groupe-EUH/Exemple";
 import { GroupeFeur } from "./pages/Groupe-FEUR/Exemple";
 import { GroupePfou } from "./pages/Groupe-PFOU/Exemple";

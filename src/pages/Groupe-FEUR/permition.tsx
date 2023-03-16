@@ -3,9 +3,8 @@ import { Geolocation } from '@capacitor/geolocation';
 export const askCoord = async () => {
 
     const permit = await Geolocation.checkPermissions();
-
+    Geolocation.getCurrentPosition();
     if (permit.location === "granted") {
-
         const coordinates = await Geolocation.getCurrentPosition();
         return (
                 coordinates
